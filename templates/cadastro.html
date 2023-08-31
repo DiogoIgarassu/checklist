@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <form action="/cadastro" method="post" class="registration-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Nome de Usuário</label>
+                <input type="text" name="username" id="username" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" name="password" id="password" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="perfil" class="form-label">Perfil</label>
+                <select name="perfil" id="perfil" required class="form-input">
+                    <option value="administrador">Administrador</option>
+                    <option value="observador">Observador</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Cadastrar" class="submit-button">
+            </div>
+        </form>
+    </div>
+{% endblock %}

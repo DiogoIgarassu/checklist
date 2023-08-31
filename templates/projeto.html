@@ -1,0 +1,17 @@
+<!-- templates/projeto.html -->
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ projeto['nome'] }}</h1>
+    <form method="post">
+        <input type="text" name="nome_item" placeholder="Nome do novo item">
+        <button type="submit">Adicionar Item</button>
+    </form>
+    <ul>
+        {% for item in projeto['itens'] %}
+            <li>
+                <input type="checkbox" {% if item['feito'] %}checked{% endif %}>
+                {{ item['nome'] }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

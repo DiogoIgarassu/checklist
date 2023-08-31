@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Lista de Projetos</h2>
+
+{% if current_user.is_authenticated %}
+  <form action="/" method="post" class="d-flex mb-2">
+    <input type="text" name="newProjectName" id="newProjectName" placeholder="Nome do novo projeto" class="form-control mr-3">
+    <button type="submit" class="btn btn-primary no-wrap mt-2 mb-2" id="addProjectBtn" disabled>Adicionar Projeto</button>
+  </form>
+{% endif %}
+
+  <div id="projectList">
+      {% for projeto in projetos %}
+        <!-- Modal de confirmação para exclusão de projeto ou tarefa-->
+          <div class="modal fade" id="deleteModal{{ projeto['_id'] }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmação</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body" id="deleteModalBody{{ projeto['_id'] }}">
+                        <!-- O texto aqui será inserido via JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <form id="deleteForm{{ projeto['_id'] }}" method="post">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#project{{ projeto['_id'] }}">
+                  <span><strong>{{ projeto.nome }}</strong>  </span>
+              </button>
+              <div>
+                  <span class="mr-2"> {{ projeto.status }} {% if current_user.is_authenticated %} - {{ projeto.data_criado }} {% endif %}</span>
+                    {% if current_user.is_authenticated %}
+                        <button class="btn btn-danger btn-sm trash" data-toggle="modal" data-target="#deleteModal{{ projeto['_id'] }}" data-type="projeto" data-id="{{ projeto['_id'] }}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    {% endif %}
+              </div>
+          </div>
+          <div id="project{{ projeto['_id'] }}" class="collapse">
+              <div class="card-body">
+                  {% if current_user.is_authenticated %}
+                    <form action="/projeto/{{ projeto['_id'] }}" method="post" class="d-flex">
+                        <input type="text" name="nome_item" id="newTaskName{{ projeto['_id'] }}" placeholder="Adicionar tarefa" class="form-control mb-2 mr-3">
+                        <button type="submit" class="btn btn-success btn-sm mb-2 addTaskBtn" id="addTaskBtn{{ projeto['_id'] }}" disabled>
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </form>
+                  {% endif %}
+                  <ul class="list-group list-group-flush">
+                      {% for item in projeto.itens %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center {{ 'checked-item' if item.feito else 'unchecked-item' }}">
+                          <span class="mr-1">
+                              {% if current_user.is_authenticated %}
+                                  <input type="checkbox"
+                                       class="custom-checkbox"
+                                       data-projeto-id="{{ projeto['_id'] }}"
+                                       data-tarefa-id="{{ item['_id'] }}"
+                                       {% if item.feito %}checked{% endif %}>
+                              {% endif %}
+                              <b>{{ item.nome }}</b>
+                          </span>
+                          {% if current_user.is_authenticated %}
+                            <button class="btn btn-danger btn-sm trash" data-toggle="modal" data-target="#deleteModal{{ projeto['_id'] }}" data-type="tarefa" data-id="{{ item['_id'] }}" data-projeto-id="{{ projeto['_id'] }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                          {% endif %}
+                      </li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+</div>
+
+{% endblock %}
