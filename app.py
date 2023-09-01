@@ -31,6 +31,5 @@ def load_user(user_id):
 if __name__ == "__main__":
     #listar_usuarios()
     #apagar_usuario('')
-    #criar_projetos_gerais([])
-    #criar_tarefas_gerais([])
+    #listar_projetos()
     app.run(debug=True)

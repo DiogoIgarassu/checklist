@@ -138,3 +138,32 @@ input:checked + .slider:before {
 .no-wrap {
     white-space: nowrap;
 }
+
+.letra-g {
+   font-size: x-large;
+}
+.letra-gg {
+   font-size: xx-large;
+}
+
+/* Alinha verticalmente o switch */
+.custom-switch {
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+}
+
+/* Define a cor interna para verde quando o switch está ativado */
+.custom-switch .custom-control-input:checked~.custom-control-label::before {
+    background-color: #28a745; /* Cor verde padrão do Bootstrap para btn-success */
+}
+
+.list-group-item {
+    display: flex;
+    align-items: center; /* Alinhamento vertical no centro */
+     line-height: normal;
+}
+
+.list-group-item:hover {
+    background-color: #007bff; /* Cor do btn-primary do Bootstrap */
+    color: white;
+}

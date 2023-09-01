@@ -50,9 +50,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let projectCards = document.querySelectorAll('.card');
 
     projectCards.forEach(card => {
-        let checkboxes = card.querySelectorAll('.custom-checkbox');
+        let customSwitchDivs = card.querySelectorAll('.custom-switch'); // seleciona divs que contêm os switches
 
-        checkboxes.forEach(checkbox => {
+        customSwitchDivs.forEach(customSwitch => {
+            let checkbox = customSwitch.querySelector('input[type="checkbox"]'); // seleciona o input dentro da div
             checkbox.addEventListener('change', function() {
                 let id_projeto = this.getAttribute('data-projeto-id');
                 let id_tarefa = this.getAttribute('data-tarefa-id');
@@ -67,7 +68,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     listItem.classList.remove('checked-item');
                     listItem.classList.add('unchecked-item');
                 }
-                console.log('Tarefa', id_projeto, id_tarefa)
+
+                console.log('Tarefa', id_projeto, id_tarefa);
+
                 fetch(`/update_tarefa/${id_projeto}/${id_tarefa}`, {
                     method: 'POST',
                     headers: {

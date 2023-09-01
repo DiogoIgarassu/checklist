@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, jsonify
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app, db
@@ -24,6 +24,15 @@ def index():
         return redirect(url_for('index'))
 
     projetos = list(projeto_collection.find())
+    projetos_pessoais = ['Artista Manoel Santos', 'Artista Micheal Jakson']
+
+    # Verificar se o usuário está logado
+    if not current_user.is_authenticated:  # Substitua esta linha pelo seu método de verificação
+        projetos = [proj for proj in projetos if proj['nome'] not in projetos_pessoais]
+
+    # Ordenação manual em Python
+    projetos.sort(key=lambda x: x['nome'].lower())
+
     return render_template('index.html', projetos=projetos)
 
 
@@ -71,7 +80,24 @@ def excluir_tarefa(id_projeto, id_tarefa):
 
 @app.route('/update_tarefa/<id_projeto>/<id_tarefa>', methods=['POST'])
 def update_tarefa(id_projeto, id_tarefa):
-    print("\033[96m", id_projeto, '-', id_tarefa, "\033[0m")
+    username = "Guest"  # Usuário padrão se ninguém estiver logado
+    if current_user and current_user.is_authenticated:
+        username = current_user.username
+
+    # Recuperar informações do projeto e tarefa usando os IDs
+    projeto = projeto_collection.find_one({'_id': ObjectId(id_projeto)})
+    tarefa = None
+    if projeto:
+        for item in projeto.get('itens', []):
+            if str(item['_id']) == id_tarefa:
+                tarefa = item
+                break
+
+    if not projeto or not tarefa:
+        return jsonify({"error": "Projeto ou tarefa não encontrados"}), 404
+
+    print("\033[95m Projeto:", projeto['nome'], "- Tarefa:", tarefa['nome'], "- Usuário:", username, "\033[0m")
+
     try:
         novo_estado = request.json['feito']
     except KeyError:
@@ -86,6 +112,28 @@ def update_tarefa(id_projeto, id_tarefa):
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"success": True})
+
+
+@app.route('/vincular', methods=['GET', 'POST'])
+def vincular():
+    if request.method == 'POST':
+        projeto_id = request.form.get('projeto')
+        link_mapa = request.form.get('link_mapa')
+
+        result = projeto_collection.update_one(
+            {'_id': ObjectId(projeto_id)},
+            {'$set': {'mapa': link_mapa}}
+        )
+
+        if result.matched_count > 0:
+            print("\033[92m", f"Documento atualizado com sucesso - {link_mapa}", "\033[0m")
+        else:
+            print("\033[92m", f"Nenhum documento corresponde ao critério fornecido  - {link_mapa}", "\033[0m")
+
+        return redirect(url_for('vincular'))
+
+    projetos = list(projeto_collection.find())
+    return render_template('vincular.html', projetos=projetos)
 
 
 @app.route('/login', methods=['GET', 'POST'])

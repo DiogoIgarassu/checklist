@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h2>Lista de Projetos</h2>
+  <div class="d-flex justify-content-between align-items-center">
+      <h2>Lista de Projetos</h2>
+      <span><b>Total: {{ projetos|length }}</b></span>
+  </div>
+
 
 {% if current_user.is_authenticated %}
   <form action="/" method="post" class="d-flex mb-2">
@@ -35,8 +39,12 @@
       <div class="card mb-3">
           <div class="card-header d-flex justify-content-between align-items-center">
               <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#project{{ projeto['_id'] }}">
-                  <span><strong>{{ projeto.nome }}</strong>  </span>
-              </button>
+                  {% if current_user.is_authenticated %}
+                    <span class="letra-g"><strong>{{ projeto.nome }}</strong>  </span>
+                  {% else %}
+                    <span class="letra-gg"><strong>{{ projeto.nome }}</strong>  </span>
+                  {% endif %}
+               </button>
               <div>
                   <span class="mr-2"> {{ projeto.status }} {% if current_user.is_authenticated %} - {{ projeto.data_criado }} {% endif %}</span>
                     {% if current_user.is_authenticated %}
@@ -59,16 +67,23 @@
                   <ul class="list-group list-group-flush">
                       {% for item in projeto.itens %}
                       <li class="list-group-item d-flex justify-content-between align-items-center {{ 'checked-item' if item.feito else 'unchecked-item' }}">
-                          <span class="mr-1">
-                              {% if current_user.is_authenticated %}
-                                  <input type="checkbox"
-                                       class="custom-checkbox"
+                        {% if current_user.is_authenticated %}
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="customSwitch{{ item['_id'] }}"
                                        data-projeto-id="{{ projeto['_id'] }}"
                                        data-tarefa-id="{{ item['_id'] }}"
                                        {% if item.feito %}checked{% endif %}>
-                              {% endif %}
-                              <b>{{ item.nome }}</b>
-                          </span>
+                                <label class="custom-control-label letra-g" for="customSwitch{{ item['_id'] }}">
+                                    <b>{{ item.nome }}</b>
+                                </label>
+                            </div>
+                        {% else %}
+                            <span class="letra-g">
+                                <b>{{ item.nome }}</b>
+                            </span>
+                        {% endif %}
                           {% if current_user.is_authenticated %}
                             <button class="btn btn-danger btn-sm trash" data-toggle="modal" data-target="#deleteModal{{ projeto['_id'] }}" data-type="tarefa" data-id="{{ item['_id'] }}" data-projeto-id="{{ projeto['_id'] }}">
                                 <i class="fa fa-trash"></i>
@@ -78,6 +93,26 @@
                       {% endfor %}
                   </ul>
               </div>
+                  {% if projeto['mapa'] %}
+                      <div class="card-footer">
+                        <div class="d-flex">
+                          <div class="p-2">
+                            <!-- Foto de perfil -->
+                            {% if projeto['foto_perfil'] %}
+                              <img src="{{ projeto['foto_perfil'] }}" alt="Profile Picture" width="80" height="80">
+                            {% else %}
+                              <!-- Foto padrão caso o atributo 'foto_perfil' não exista -->
+                              <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Profile Picture" width="50" height="50">
+                            {% endif %}
+                          </div>
+                          <div class="ml-auto p-2">
+                            <!-- Nome do Projeto e Link para o Mapa Cultural -->
+                            <strong>{{ projeto['nome_mapa'] }}</strong><br>
+                            <a href="{{ projeto['mapa'] }}" target="_blank">{{ projeto['mapa'] }}</a>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
           </div>
       </div>
       {% endfor %}

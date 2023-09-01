@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>Vincular Projeto ao Mapa Cultural</h1>
+  <br><br>
+  <form action="/vincular" method="post">
+    <div class="form-group">
+      <label for="projeto">Escolha o projeto</label>
+      <select name="projeto" id="projeto" class="form-control select2">
+        {% for projeto in projetos %}
+        <option value="{{ projeto['_id'] }}" data-mapa="{{ projeto['mapa'] or '' }}">{{ projeto['nome'] }}  {{ projeto['mapa'] or '' }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div id="existingMap" style="display:none;">
+      Mapa cultural existente: <span id="existingMapLink"></span>
+      <button id="editMapBtn">Editar</button>
+    </div>
+
+    <br><br>
+    <div class="form-group mt-3">
+      <label for="link_mapa">Link do Mapa Cultural</label>
+      <input type="text" name="link_mapa" id="link_mapa" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Vincular</button>
+  </form>
+
+<script>
+  $(document).ready(function() {
+    $('.select2').select2();
+
+    $('#projeto').on('change', function() {
+      const selectedProjeto = $(this).find('option:selected');
+      const mapa = selectedProjeto.data('mapa');
+
+      if(mapa) {
+        $('#existingMapLink').text(mapa);
+        $('#existingMap').show();
+      } else {
+        $('#existingMap').hide();
+      }
+    });
+
+    $('#editMapBtn').on('click', function(event) {
+      event.preventDefault();  // Adicionado para evitar o comportamento padrão de recarregar a página
+      const existingMapLink = $('#existingMapLink').text();
+      $('#link_mapa').val(existingMapLink);
+    });
+  });
+</script>
+
+{% endblock %}
