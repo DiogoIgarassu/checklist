@@ -24,7 +24,7 @@ def index():
             if current_user and current_user.is_authenticated:
                 username = current_user.username
 
-            print("\033[92m", f"O usuário {username} adicionouo o projeto {novo_projeto} em {formatted_date}", "\033[0m")
+            print("\033[92m", f"O usuário {username} adicionou o projeto {novo_projeto} em {formatted_date}", "\033[0m")
             projeto_collection.insert_one({'nome': novo_projeto, 'itens': [], 'status': 'Em Andamento',
                                            'data_criado': formatted_date})
             return redirect(url_for('index'))
@@ -70,15 +70,23 @@ def excluir_projeto(id_projeto):
 
 @app.route('/excluir_tarefa/<id_projeto>/<id_tarefa>', methods=['POST'])
 def excluir_tarefa(id_projeto, id_tarefa):
-    try:
-        id_tarefa = int(id_tarefa)  # Convertendo para int; mude isso de acordo com o tipo de ID que você está usando
-    except ValueError:
-        return "ID da tarefa inválido", 400
+    username = "Guest"  # Usuário padrão se ninguém estiver logado
+    if current_user and current_user.is_authenticated:
+        username = current_user.username
 
+    projeto = projeto_collection.find_one({'_id': ObjectId(id_projeto)})
+    tarefa = None
+    if projeto:
+        for item in projeto.get('itens', []):
+            if str(item['_id']) == id_tarefa:
+                tarefa = item
+                break
+
+    print("\033[91m", f"Exclusão da tarefa {tarefa['nome']} do projeto {projeto['nome']} pelo Usuário {username}", "\033[0m")
     try:
         projeto_collection.update_one(
             {'_id': ObjectId(id_projeto)},
-            {'$pull': {'itens': {'_id': id_tarefa}}}
+            {'$pull': {'itens': {'_id': ObjectId(str(id_tarefa))}}}
         )
     except Exception as e:
         return str(e), 500

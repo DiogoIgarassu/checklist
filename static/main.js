@@ -1,14 +1,48 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const newProjectNameInput = document.getElementById("newProjectName");
-    const addProjectBtn = document.getElementById("addProjectBtn");
-    newProjectNameInput.addEventListener("input", function() {
-        if (newProjectNameInput.value.length > 3) {
-            addProjectBtn.disabled = false;
+
+    // Função para fazer filtro
+    const searchProject = document.getElementById('searchProject');
+    const resetSearch = document.getElementById('resetSearch');
+    const cards = document.querySelectorAll('.card');
+
+    searchProject.addEventListener('keyup', function() {
+      const filter = this.value.toUpperCase();
+
+      // Verificar se há pelo menos 3 caracteres digitados
+      if (filter.length < 3) {
+        return;
+      }
+
+      for (const card of cards) {
+        const projectName = card.querySelector('.btn-link').textContent.toUpperCase();
+        if (projectName.includes(filter)) {
+          card.style.display = "";
         } else {
-            addProjectBtn.disabled = true;
+          card.style.display = "none";
         }
+      }
     });
 
+    // Função para resetar a busca
+    resetSearch.addEventListener('click', function() {
+      searchProject.value = "";
+      for (const card of cards) {
+        card.style.display = "";
+      }
+    });
+
+    // Função para habilitar o botão de adicionar projeto no modal
+    const newProjectNameModal = document.getElementById('newProjectNameModal');
+    const addProjectBtn = document.getElementById('addProjectBtn');
+    console.log("addProjectBtn", addProjectBtn);
+
+    newProjectNameModal.addEventListener('keyup', function() {
+      const projectName = this.value.trim();
+      console.log("projectName", projectName, projectName.length < 3);
+      addProjectBtn.disabled = projectName.length < 3;
+    });
+
+    // Atica botão incluir tarefas
     const addTaskBtns = document.querySelectorAll(".addTaskBtn");
 
     addTaskBtns.forEach((btn) => {
@@ -16,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const newTaskNameInput = document.getElementById(`newTaskName${id}`);
 
         newTaskNameInput.addEventListener("input", function() {
-            if (newTaskNameInput.value.length > 3) {
+            if (newTaskNameInput.value.length > 1) {
                 btn.disabled = false;
             } else {
                 btn.disabled = true;
@@ -24,29 +58,33 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // Abre modal para excluir projetos ou tarefas
     const modals = document.querySelectorAll('.modal');
 
     modals.forEach(modal => {
         $(modal).on('show.bs.modal', function(event) {
+            const modalId = this.id;
             const button = event.relatedTarget;
             const type = button.getAttribute('data-type');
             const id = button.getAttribute('data-id');
             const projetoId = button.getAttribute('data-projeto-id');
-
-            let targetId = (type === 'projeto') ? id : projetoId;
+            const targetId = (type === 'projeto') ? id : projetoId;
             const deleteModalBody = document.getElementById(`deleteModalBody${targetId}`);
             const deleteForm = document.getElementById(`deleteForm${targetId}`);
 
-            if (type === 'projeto') {
-                deleteModalBody.textContent = 'Tem certeza de que deseja excluir este projeto?';
-                deleteForm.action = `/excluir_projeto/${id}`;
-            } else {
-                deleteModalBody.textContent = 'Tem certeza de que deseja excluir esta tarefa?';
-                deleteForm.action = `/excluir_tarefa/${projetoId}/${id}`;
+            if (deleteModalBody) {
+                if (type === 'projeto') {
+                    deleteModalBody.textContent = 'Tem certeza de que deseja excluir este projeto?';
+                    deleteForm.action = `/excluir_projeto/${id}`;
+                } else {
+                    deleteModalBody.textContent = 'Tem certeza de que deseja excluir esta tarefa?';
+                    deleteForm.action = `/excluir_tarefa/${projetoId}/${id}`;
+                }
             }
         });
     });
 
+    //Salva a checagem das tarefas
     let projectCards = document.querySelectorAll('.card');
 
     projectCards.forEach(card => {
@@ -83,31 +121,5 @@ document.addEventListener("DOMContentLoaded", function() {
                   });
             });
         });
-    });
-
-    // Função para filtrar projetos
-    document.addEventListener('DOMContentLoaded', function () {
-      const searchProject = document.getElementById('searchProject');
-      searchProject.addEventListener('keyup', function() {
-        const filter = this.value.toUpperCase();
-        const cards = document.querySelectorAll('.card');
-
-        for (const card of cards) {
-          const projectName = card.querySelector('.btn-link').textContent.toUpperCase();
-          if (projectName.includes(filter)) {
-            card.style.display = "";
-          } else {
-            card.style.display = "none";
-          }
-        }
-      });
-
-      // Função para habilitar o botão de adicionar projeto no modal
-      const newProjectNameModal = document.getElementById('newProjectNameModal');
-      const addProjectForm = document.getElementById('addProjectForm');
-      newProjectNameModal.addEventListener('keyup', function() {
-        const projectName = this.value.trim();
-        addProjectForm.querySelector('button[type="submit"]').disabled = projectName.length < 1;
-      });
     });
 });
