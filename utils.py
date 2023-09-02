@@ -61,8 +61,8 @@ from bson import ObjectId
 
 
 def criar_tarefas_gerais(lista_tarefas=None, projetos_nomes=None):
-
     resposta = input("Tem certeza de que deseja continuar? Isso pode resultar em perda de informações. (Sim/Não): ").strip().lower()
+
     if resposta != 'sim':
         print("\033[93m", "Operação cancelada pelo usuário.", "\033[0m")
         return
@@ -72,6 +72,8 @@ def criar_tarefas_gerais(lista_tarefas=None, projetos_nomes=None):
 
     # Filtrar projetos com base na lista fornecida de nomes de projetos
     projetos_nomes = ['Artista Elisangela Monteiro', 'Artista Marcelo Stallone']
+
+    # Montar a query para encontrar os projetos desejados
     query = {}
     if projetos_nomes:
         query['nome'] = {'$in': projetos_nomes}
@@ -80,12 +82,12 @@ def criar_tarefas_gerais(lista_tarefas=None, projetos_nomes=None):
 
     for projeto in todos_projetos:
         id_projeto = projeto['_id']
-        tarefas_existentes = {item['nome'] for item in projeto['itens']}
+        tarefas_existentes = {item['nome'] for item in projeto.get('itens', [])}  # Usando get() para evitar KeyError
 
         for nome_tarefa in lista_tarefas:
             if nome_tarefa not in tarefas_existentes:
                 novo_id = ObjectId()
-                print("\033[93m", f'Criando tarefa {nome_tarefa} ...', "\033[0m")
+                print("\033[93m", f"Criando tarefa {nome_tarefa} para {projeto['nome']}", "\033[0m")
                 projeto_collection.update_one(
                     {'_id': ObjectId(id_projeto)},
                     {'$push': {'itens': {'_id': novo_id, 'nome': nome_tarefa, 'feito': False}}}
@@ -115,10 +117,13 @@ def criar_projetos_gerais(lista_projetos=None):
 def listar_projetos():
     projetos = list(projeto_collection.find())
 
-    # Ordenação manual em Python
-    projetos.sort(key=lambda x: x['nome'].lower())
-    for projeto in projetos:
-        print("\033[94m", f"{projeto['nome']}", "\033[0m")
+    try:
+        # Ordenação manual em Python
+        projetos.sort(key=lambda x: x['nome'].lower())
+        for projeto in projetos:
+            print("\033[94m", f"{projeto['nome']}", "\033[0m")
+    except Exception as e:
+        return print(str(e))
 
 
 # Nova função para listar todos os usuários cadastrados

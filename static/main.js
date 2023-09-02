@@ -84,4 +84,30 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     });
+
+    // Função para filtrar projetos
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchProject = document.getElementById('searchProject');
+      searchProject.addEventListener('keyup', function() {
+        const filter = this.value.toUpperCase();
+        const cards = document.querySelectorAll('.card');
+
+        for (const card of cards) {
+          const projectName = card.querySelector('.btn-link').textContent.toUpperCase();
+          if (projectName.includes(filter)) {
+            card.style.display = "";
+          } else {
+            card.style.display = "none";
+          }
+        }
+      });
+
+      // Função para habilitar o botão de adicionar projeto no modal
+      const newProjectNameModal = document.getElementById('newProjectNameModal');
+      const addProjectForm = document.getElementById('addProjectForm');
+      newProjectNameModal.addEventListener('keyup', function() {
+        const projectName = this.value.trim();
+        addProjectForm.querySelector('button[type="submit"]').disabled = projectName.length < 1;
+      });
+    });
 });

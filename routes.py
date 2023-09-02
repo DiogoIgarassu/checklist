@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, jsonify, send_file
 from flask_login import login_user, logout_user, current_user
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app, db
 from models import User
 from bson.objectid import ObjectId
+import pandas as pd
 
 projeto_collection = db['projetos']
 user_collection = db['usuarios']
@@ -18,10 +19,15 @@ def index():
         now = datetime.now()
         formatted_date = now.strftime("%d/%m/%Y às %H:%M")
 
-        print("\033[92m", formatted_date, "\033[0m")
-        projeto_collection.insert_one({'nome': novo_projeto, 'itens': [], 'status': 'Em Andamento',
-                                       'data_criado': formatted_date})
-        return redirect(url_for('index'))
+        if novo_projeto:
+            username = "Guest"  # Usuário padrão se ninguém estiver logado
+            if current_user and current_user.is_authenticated:
+                username = current_user.username
+
+            print("\033[92m", f"O usuário {username} adicionouo o projeto {novo_projeto} em {formatted_date}", "\033[0m")
+            projeto_collection.insert_one({'nome': novo_projeto, 'itens': [], 'status': 'Em Andamento',
+                                           'data_criado': formatted_date})
+            return redirect(url_for('index'))
 
     projetos = list(projeto_collection.find())
     projetos_pessoais = ['Artista Manoel Santos', 'Artista Micheal Jakson']
@@ -29,6 +35,7 @@ def index():
     # Verificar se o usuário está logado
     if not current_user.is_authenticated:  # Substitua esta linha pelo seu método de verificação
         projetos = [proj for proj in projetos if proj['nome'] not in projetos_pessoais]
+    #print("\033[95m", projetos[0])
 
     # Ordenação manual em Python
     projetos.sort(key=lambda x: x['nome'].lower())
@@ -96,7 +103,7 @@ def update_tarefa(id_projeto, id_tarefa):
     if not projeto or not tarefa:
         return jsonify({"error": "Projeto ou tarefa não encontrados"}), 404
 
-    print("\033[95m Projeto:", projeto['nome'], "- Tarefa:", tarefa['nome'], "- Usuário:", username, "\033[0m")
+    print("\033[95m", "Projeto:", projeto['nome'], "- Tarefa:", tarefa['nome'], "- Usuário:", username, "\033[0m")
 
     try:
         novo_estado = request.json['feito']
@@ -134,6 +141,41 @@ def vincular():
 
     projetos = list(projeto_collection.find())
     return render_template('vincular.html', projetos=projetos)
+
+
+@app.route('/export_to_excel')
+def export_to_excel():
+    # Obter projetos de sua fonte de dados, tal como um banco de dados
+    # Neste exemplo, estou usando uma lista de dicionários para simulação
+    projetos = list(projeto_collection.find())
+
+    # Criar lista para armazenar os dados
+    data = []
+
+    for projeto in projetos:
+        for item in projeto.get('itens', []):
+            row = {
+                'Projeto': projeto['nome'],
+                'Tarefa': item['nome'],
+                'Status Tarefa': 'Feito' if item['feito'] else 'Não Feito',
+                'Data Criado': projeto['data_criado'],
+                'Mapa': projeto.get('mapa', ''),
+                'Foto Perfil': projeto.get('foto_perfil', ''),
+                'Nome no Mapa': projeto.get('nome_mapa', '')
+            }
+            data.append(row)
+
+    # Criar DataFrame
+    df = pd.DataFrame(data)
+
+    # Exportar para Excel e salvar temporariamente
+    filename = 'backup_projetos.xlsx'
+    df.to_excel(filename, index=False)
+
+    return send_file(filename,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True,
+                     download_name='backup_projetos.xlsx')
 
 
 @app.route('/login', methods=['GET', 'POST'])
