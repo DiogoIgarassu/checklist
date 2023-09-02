@@ -6,19 +6,22 @@
   <form action="/vincular" method="post">
     <div class="form-group">
       <label for="projeto">Escolha o projeto</label>
-      <select name="projeto" id="projeto" class="form-control select2">
+      <select name="projeto" id="projeto" class="form-control select2" size="10">
         {% for projeto in projetos %}
-        <option value="{{ projeto['_id'] }}" data-mapa="{{ projeto['mapa'] or '' }}">{{ projeto['nome'] }}  {{ projeto['mapa'] or '' }}</option>
+          {% if projeto['mapa'] %}
+            <option value="{{ projeto['_id'] }}" data-mapa="{{ projeto['mapa'] or '' }}">{{ projeto['nome'] }} - {{ projeto['mapa'] }}</option>
+          {% else %}
+            <option value="{{ projeto['_id'] }}" data-mapa="{{ projeto['mapa'] or '' }}">{{ projeto['nome'] }}</option>
+          {% endif %}
         {% endfor %}
       </select>
     </div>
 
     <div id="existingMap" style="display:none;">
-      Mapa cultural existente: <span id="existingMapLink"></span>
-      <button id="editMapBtn">Editar</button>
+      <b>Mapa cultural existente:</b> <span id="existingMapLink" class="mb-3"></span>
+      <button id="editMapBtn" class="btn btn-danger">Editar</button>
     </div>
 
-    <br><br>
     <div class="form-group mt-3">
       <label for="link_mapa">Link do Mapa Cultural</label>
       <input type="text" name="link_mapa" id="link_mapa" class="form-control">
@@ -26,7 +29,7 @@
 
     <button type="submit" class="btn btn-primary mt-2">Vincular</button>
   </form>
-
+  <br><br><br><br>
 <script>
   $(document).ready(function() {
     $('.select2').select2();
@@ -50,5 +53,12 @@
     });
   });
 </script>
-
+    {% if current_user.is_authenticated %}
+      <div style="position: fixed; bottom: 10px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+          Lista de Projetos
+        </a>
+      </div>
+    {% endif %}
 {% endblock %}

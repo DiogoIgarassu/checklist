@@ -144,13 +144,19 @@
       {% endfor %}
 </div>
 
-  <!-- Botão de Download no final da página -->
-  {% if current_user.is_authenticated %}
-    <div style="position: fixed; bottom: 10px; right: 10px;">
-      <a href="{{ url_for('export_to_excel') }}" class="btn btn-success">
-        Download dos Dados
-      </a>
-    </div>
-  {% endif %}
 
+    {% if current_user.is_authenticated %}
+      <div style="position: fixed; bottom: 60px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('vincular') }}" class="btn btn-primary">
+          Vincular Mapa
+        </a>
+      </div>
+      <div style="position: fixed; bottom: 10px; right: 10px;">
+        <!-- Botão de Download no final da página -->
+        <a href="{{ url_for('export_to_excel') }}" class="btn btn-success">
+          Download dos Dados
+        </a>
+      </div>
+    {% endif %}
 {% endblock %}
