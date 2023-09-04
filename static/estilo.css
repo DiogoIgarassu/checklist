@@ -167,3 +167,19 @@ input:checked + .slider:before {
     background-color: #007bff; /* Cor do btn-primary do Bootstrap */
     color: white;
 }
+
+.alinha-esquerda {
+    justify-content: flex-start;
+}
+
+.proponente-container label {
+    font-weight: bold;
+}
+
+.card-carta span {
+    font-weight: bold;
+}
+
+.card-body p {
+    text-align: justify;
+}

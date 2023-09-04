@@ -1,0 +1,230 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-5 proponente-container">
+    <h1 class="text-center">Adicionar Proponente</h1> <br>
+    <form action="{{ url_for('adicionar_proponente') }}" method="POST">
+
+        <!-- Selecione o Projeto -->
+        <div class="form-group">
+            <label for="projeto_id">Selecione o Projeto:</label>
+            <select class="form-control" name="projeto_id" id="projeto_id">
+                {% for projeto in projetos %}
+                    {% if projeto.proponente %}
+                        <option value="{{ projeto._id }}"
+                            data-nome_projeto="{{ projeto.get('nome', '') }}"
+                            data-nome_proponente="{{ projeto.get('proponente', [{}])[0].get('nome_proponente', '') }}"
+                            data-rg="{{ projeto.get('proponente', [{}])[0].get('rg', '') }}"
+                            data-emissor="{{ projeto.get('proponente', [{}])[0].get('emissor', '') }}"
+                            data-cpf="{{ projeto.get('proponente', [{}])[0].get('cpf', '') }}"
+                            data-sexo="{{ projeto.get('proponente', [{}])[0].get('sexo', '') }}"
+                            data-estado_civil="{{ projeto.get('proponente', [{}])[0].get('estado_civil', '') }}"
+                            data-rua="{{ projeto.get('proponente', [{}])[0].get('rua', '') }}"
+                            data-numero="{{ projeto.get('proponente', [{}])[0].get('numero', '') }}"
+                            data-bairro="{{ projeto.get('proponente', [{}])[0].get('bairro', '') }}"
+                            data-cidade="{{ projeto.get('proponente', [{}])[0].get('cidade', '') }}"
+                            data-cep="{{ projeto.get('proponente', [{}])[0].get('cep', '') }}"
+                            >
+                            {{ projeto.nome }} - Tem Proponente
+                        </option>
+                    {% else %}
+                        <option value="{{ projeto._id }}"
+                            data-nome_projeto="{{ projeto.get('nome', '') }}"
+                            data-nome_proponente="{{ projeto.get('proponente', [{}])[0].get('nome_proponente', '') }}"
+                            data-rg="{{ projeto.get('proponente', [{}])[0].get('rg', '') }}"
+                            data-emissor="{{ projeto.get('proponente', [{}])[0].get('emissor', '') }}"
+                            data-cpf="{{ projeto.get('proponente', [{}])[0].get('cpf', '') }}"
+                            data-estado_civil="{{ projeto.get('proponente', [{}])[0].get('estado_civil', '') }}"
+                            data-rua="{{ projeto.get('proponente', [{}])[0].get('rua', '') }}"
+                            data-numero="{{ projeto.get('proponente', [{}])[0].get('numero', '') }}"
+                            data-bairro="{{ projeto.get('proponente', [{}])[0].get('bairro', '') }}"
+                            data-cidade="{{ projeto.get('proponente', [{}])[0].get('cidade', '') }}"
+                            data-cep="{{ projeto.get('proponente', [{}])[0].get('cep', '') }}"
+                        >
+                        {{ projeto.nome }}
+                    </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Nome -->
+        <div class="form-group">
+            <label for="nome_proponente">Nome:</label>
+            <input type="text" class="form-control" name="nome_proponente" id="nome_proponente" required>
+        </div>
+
+        <!-- RG, Emissor, CPF -->
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="rg_proponente">RG:</label>
+                <input type="text" class="form-control" name="rg_proponente" id="rg_proponente" required>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="emissor_proponente">Emissor:</label>
+                <input type="text" class="form-control" name="emissor_proponente" id="emissor_proponente" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="cpf_proponente">CPF:</label>
+                <input type="text" class="form-control" name="cpf_proponente" id="cpf_proponente" required>
+            </div>
+        </div>
+
+        <!-- Sexo, Estado Civil -->
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label>Sexo:</label><br>
+                <input type="radio" name="sexo_proponente" value="Homem" data-value="Homem" required> Homem
+                <input type="radio" name="sexo_proponente" value="Mulher" data-value="Mulher" required> Mulher
+            </div>
+            <div class="form-group col-md-6">
+                <label>Estado Civil:</label><br>
+                <input type="radio" name="estado_civil" value="Solteiro" data-value="Solteiro" required> Solteiro
+                <input type="radio" name="estado_civil" value="Casado" data-value="Casado" required> Casado
+                <input type="radio" name="estado_civil" value="Viúvo" data-value="Viúvo" required> Viúvo
+            </div>
+        </div>
+
+        <!-- Rua, Número -->
+        <div class="form-row">
+            <div class="form-group col-md-10">
+                <label for="rua_proponente">Logradouro:</label>
+                <input type="text" class="form-control" name="rua_proponente" id="rua_proponente" required>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="numero_proponente">Número:</label>
+                <input type="text" class="form-control" name="numero_proponente" id="numero_proponente" required>
+            </div>
+        </div>
+
+        <!-- Bairro, Cidade, CEP -->
+        <div class="form-row">
+            <div class="form-group col-md-5">
+                <label for="bairro_proponente">Bairro:</label>
+                <input type="text" class="form-control" name="bairro_proponente" id="bairro_proponente" required>
+            </div>
+            <div class="form-group col-md-5">
+                <label for="cidade_proponente">Cidade:</label>
+                <input type="text" class="form-control" name="cidade_proponente" id="cidade_proponente" required>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="cep_proponente">CEP:</label>
+                <input type="text" class="form-control" name="cep_proponente" id="cep_proponente" required>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Adicionar Proponente</button>
+        </div>
+    </form>
+
+       <!-- Card se for Homem -->
+    <div class="card card-carta mt-5">
+        <div class="card-header">
+            Carta de anuência para Coletivos
+        </div>
+        <div class="card-body">
+            <p>
+                Nós, abaixo assinados, integrantes do grupo <span id="anuencia_projeto"></span>, neste ato representado
+                por <span id="anuencia_nome"></span>, portador(a) do RG nº <span id="anuencia_rg"></span>,  Órgão Emissor
+                <span id="anuencia_emissor"></span>, e do CPF nº <span id="anuencia_cpf"></span>, autorizamos e
+                reconhecemos que a Pessoa Física acima qualificada é nossa representante legal e integrante do grupo,
+                outorgamos-lhe poderes para fazer cumprir todos os procedimentos exigidos nas etapas do
+                <b>EDITAL DE SALVAGUARDA DAS CULTURAS POPULARES, DOS POVOS E COMUNIDADES TRADICIONAIS - LEI PAULO GUSTAVO/2023</b>,
+                inclusive assinatura de recibo, troca de comunicações, podendo assumir compromissos, obrigações, transigir,
+                receber pagamentos e dar quitação, renunciar direitos e qualquer outro ato relacionado ao referido edital.
+            </p>
+        </div>
+    </div>
+
+        <div class="card card-carta mt-5">
+        <div class="card-header">
+            Auto Declaração de Residência
+        </div>
+        <div class="card-body">
+            <p>
+                Na falta de documentos próprios, aptos a comprovarem minha residência, e domicílio, eu <span id="auto_nome"></span>,
+                nacionalidade:	<b>brasileira</b>, estado civil: <span id="auto_estado_civil"></span> , portador(a) do RG nº
+                <span id="auto_rg"></span> <span id="auto_emissor"></span>
+                e CPF nº <span id="auto_cpf"></span>, declaro ser residente e domiciliado no seguinte endereço:
+                <span id="auto_rua"></span>, nº	<span id="auto_numero"></span>, no bairro <span id="auto_bairro"></span>,
+                na Cidade de <span id="auto_cidade"></span>, CEP nº <span id="auto_cep"></span>.
+                Declaro sob as penas previstas na legislação, que as informações prestadas nesta declaração são verdadeiras,
+                estando ciente das penalidades previstas no Art. 299 do Código Penal Brasileiro.
+            </p>
+        </div>
+    </div>
+    <!-- Fim do novo Card -->
+
+</div>
+
+
+      <div style="position: fixed; bottom: 10px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+          Lista de Projetos
+        </a>
+      </div>
+<script>
+
+    const projetoSelect = document.getElementById('projeto_id');
+    projetoSelect.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+
+    document.getElementById('nome_proponente').value = selectedOption.getAttribute('data-nome_proponente');
+    document.getElementById('rg_proponente').value = selectedOption.getAttribute('data-rg');
+    document.getElementById('emissor_proponente').value = selectedOption.getAttribute('data-emissor');
+    document.getElementById('cpf_proponente').value = selectedOption.getAttribute('data-cpf');
+    document.getElementById('rua_proponente').value = selectedOption.getAttribute('data-rua');
+    document.getElementById('numero_proponente').value = selectedOption.getAttribute('data-numero');
+    document.getElementById('bairro_proponente').value = selectedOption.getAttribute('data-bairro');
+    document.getElementById('cidade_proponente').value = selectedOption.getAttribute('data-cidade');
+    document.getElementById('cep_proponente').value = selectedOption.getAttribute('data-cep');
+
+        // Populate radio buttons for Sexo
+    const sexoValue = selectedOption.getAttribute('data-sexo');
+    document.querySelectorAll('input[name="sexo_proponente"]').forEach((radio) => {
+        radio.checked = (radio.getAttribute('data-value') === sexoValue);
+    });
+
+    // Populate radio buttons for Estado Civil
+    const estadoCivilValue = selectedOption.getAttribute('data-estado_civil');
+    document.querySelectorAll('input[name="estado_civil"]').forEach((radio) => {
+        radio.checked = (radio.getAttribute('data-value') === estadoCivilValue);
+    });
+
+    document.getElementById('anuencia_projeto').textContent = selectedOption.getAttribute('data-nome_projeto');
+    document.getElementById('anuencia_nome').textContent = selectedOption.getAttribute('data-nome_proponente');
+    document.getElementById('anuencia_rg').textContent = selectedOption.getAttribute('data-rg');
+    document.getElementById('anuencia_emissor').textContent = selectedOption.getAttribute('data-emissor');
+    document.getElementById('anuencia_cpf').textContent = selectedOption.getAttribute('data-cpf');
+
+
+    // Suponha que o atributo de dados para o sexo seja 'data-sexo'
+    var sexo = selectedOption.getAttribute('data-sexo');
+    var estadoCivil = selectedOption.getAttribute('data-estado_civil');
+
+    // Se o sexo for "Mulher", substitua a última letra de 'estadoCivil' por 'a'
+    if (sexo === 'Mulher') {
+        estadoCivil = estadoCivil.slice(0, -1) + 'a';
+    }
+
+    // Agora, atualize o conteúdo do elemento com id 'auto_estado_civil'
+    document.getElementById('auto_estado_civil').textContent = estadoCivil;
+
+    document.getElementById('auto_nome').textContent = selectedOption.getAttribute('data-nome_proponente');
+    document.getElementById('auto_rg').textContent = selectedOption.getAttribute('data-rg');
+    document.getElementById('auto_emissor').textContent = selectedOption.getAttribute('data-emissor');
+    document.getElementById('auto_cpf').textContent = selectedOption.getAttribute('data-cpf');
+    document.getElementById('auto_rua').textContent = selectedOption.getAttribute('data-rua');
+    document.getElementById('auto_numero').textContent = selectedOption.getAttribute('data-numero');
+    document.getElementById('auto_bairro').textContent = selectedOption.getAttribute('data-bairro');
+    document.getElementById('auto_cidade').textContent = selectedOption.getAttribute('data-cidade');
+    document.getElementById('auto_cep').textContent = selectedOption.getAttribute('data-cep');
+
+
+    });
+
+</script>
+{% endblock %}

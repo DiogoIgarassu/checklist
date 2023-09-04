@@ -119,26 +119,41 @@
                       {% endfor %}
                   </ul>
               </div>
-                  {% if projeto['mapa'] %}
-                      <div class="card-footer">
-                        <div class="d-flex">
-                          <div class="p-2">
-                            <!-- Foto de perfil -->
-                            {% if projeto['foto_perfil'] %}
-                              <img src="{{ projeto['foto_perfil'] }}" alt="Profile Picture" width="80" height="80">
-                            {% else %}
-                              <!-- Foto padrão caso o atributo 'foto_perfil' não exista -->
-                              <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Profile Picture" width="50" height="50">
-                            {% endif %}
-                          </div>
-                          <div class="ml-auto p-2">
-                            <!-- Nome do Projeto e Link para o Mapa Cultural -->
-                            <strong>{{ projeto['nome_mapa'] }}</strong><br>
-                            <a href="{{ projeto['mapa'] }}" target="_blank">{{ projeto['mapa'] }}</a>
-                          </div>
-                        </div>
+
+            {% if projeto['mapa'] %}
+              <div class="card-footer">
+                <div class="d-flex align-items-center" >
+
+                  <!-- Coluna da Foto e Nome do Mapa (80% da largura) -->
+                  <div style="flex: 0 0 80%;">
+                    <div class="d-flex alinha-esquerda">
+                      <!-- Foto de perfil -->
+                      <div>
+                        {% if projeto['foto_perfil'] %}
+                          <img src="{{ projeto['foto_perfil'] }}" alt="Profile Picture" width="80" height="80">
+                        {% else %}
+                          <!-- Foto padrão caso o atributo 'foto_perfil' não exista -->
+                          <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Profile Picture" width="50" height="50">
+                        {% endif %}
                       </div>
-                    {% endif %}
+
+                      <!-- Nome do Projeto e Link para o Mapa Cultural -->
+                      <div class="ml-3">
+                        <strong>{{ projeto['nome_mapa'] }}</strong><br>
+                        <a href="{{ projeto['mapa'] }}" target="_blank">{{ projeto['mapa'] }}</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Coluna da Cidade (alinhar vertical e horizontalmente) -->
+                  <div class="d-flex align-items-center justify-content-center" style="flex: 1;">
+                    <strong>{{ projeto['cidade'] or 'Cidade não disponível' }} - PE</strong>
+                  </div>
+
+                </div>
+              </div>
+            {% endif %}
+
           </div>
       </div>
       {% endfor %}
@@ -146,6 +161,12 @@
 
 
     {% if current_user.is_authenticated %}
+      <div style="position: fixed; bottom: 110px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('adicionar_proponente') }}" class="btn btn-warning">
+          Proponentes
+        </a>
+      </div>
       <div style="position: fixed; bottom: 60px; right: 10px;">
         <!-- Adicionando o botão Vincular Mapa -->
         <a href="{{ url_for('vincular') }}" class="btn btn-primary">

@@ -114,14 +114,23 @@ def criar_projetos_gerais(lista_projetos=None):
             })
 
 
-def listar_projetos():
-    projetos = list(projeto_collection.find())
+def listar_projetos(nomes_projetos=None):
+    if nomes_projetos is None:
+        # Se nenhum nome de projeto foi passado como argumento, buscar todos os projetos
+        projetos = list(projeto_collection.find())
+    else:
+        # Se uma lista de nomes de projetos foi passada como argumento, buscar esses projetos específicos
+        projetos = list(projeto_collection.find({'nome': {'$in': nomes_projetos}}))
 
     try:
-        # Ordenação manual em Python
-        projetos.sort(key=lambda x: x['nome'].lower())
-        for projeto in projetos:
-            print("\033[94m", f"{projeto['nome']}", "\033[0m")
+        if nomes_projetos:
+            for projeto in projetos:
+                print("\033[94m", f"{projeto}", "\033[0m")
+        else:
+            # Ordenação manual em Python
+            projetos.sort(key=lambda x: x['nome'].lower())
+            for projeto in projetos:
+                print("\033[94m", f"{projeto['nome']}", "\033[0m")
     except Exception as e:
         return print(str(e))
 

@@ -24,6 +24,7 @@ for projeto in projetos:
             # Fazer o parsing do HTML
             soup = BeautifulSoup(response.text, 'html.parser')
             #print('soup', soup)
+
             # Encontrar o elemento com a classe 'avatar'
             avatar_div = soup.find('div', class_='avatar')
 
@@ -38,7 +39,7 @@ for projeto in projetos:
                         {'_id': projeto['_id']},
                         {'$set': {'foto_perfil': img_url}}
                     )
-                    print("\033[92m", f"Foto de perfil atualizada para o projeto {projeto['nome']}")
+                    print("\033[96m", f">> Foto de perfil atualizada para o projeto {projeto['nome']}")
                 else:
                     print("\033[91m", f"Nenhum elemento de imagem encontrado para o projeto {projeto['nome']}")
             else:
@@ -54,10 +55,23 @@ for projeto in projetos:
                     {'_id': projeto['_id']},
                     {'$set': {'nome_mapa': nome_mapa}}
                 )
-                print("\033[92m", f"Nome do Mapa Cultural atualizado para o projeto {projeto['nome']}")
+                print("\033[96m", f">> Nome do Mapa Cultural atualizado para o projeto {projeto['nome']}")
             else:
                 print("\033[91m", f"Nenhum nome encontrado no Mapa Cultural para o projeto {projeto['nome']}")
 
+            # Encontrar o elemento com a classe 'js-editable' e id 'En_Municipio'
+            cidade_span = soup.find('span', {'class': 'js-editable', 'id': 'En_Municipio'})
+            if cidade_span:
+                nome_cidade = cidade_span.text.strip()  # Removendo espaços em branco, se houver
+
+                # Atualizar o atributo 'cidade' no MongoDB
+                projeto_collection.update_one(
+                    {'_id': projeto['_id']},
+                    {'$set': {'cidade': nome_cidade}}
+                )
+                print("\033[96m", f">> Cidade atualizada para o projeto {projeto['nome']} como {nome_cidade}")
+            else:
+                print("\033[91m", f"Nenhuma cidade encontrada no Mapa Cultural para o projeto {projeto['nome']}")
         else:
             print("\033[91m", f"Não foi possível acessar a URL {url} para o projeto {projeto['nome']}")
 

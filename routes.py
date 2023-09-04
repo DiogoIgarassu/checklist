@@ -5,6 +5,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import app, db
 from models import User
 from bson.objectid import ObjectId
+from bson import json_util
+import json
 import pandas as pd
 
 projeto_collection = db['projetos']
@@ -150,6 +152,57 @@ def vincular():
     projetos = list(projeto_collection.find())
     return render_template('vincular.html', projetos=projetos)
 
+
+@app.route('/adicionar_proponente', methods=['GET', 'POST'])
+def adicionar_proponente():
+    if request.method == 'POST':
+        projeto_id = request.form.get('projeto_id')
+        nome_proponente = request.form.get('nome_proponente')
+        rg = request.form.get('rg_proponente')
+        emissor = request.form.get('emissor_proponente')
+        cpf = request.form.get('cpf_proponente')
+        sexo = request.form.get('sexo_proponente')
+        estado_civil = request.form.get('estado_civil')
+        rua = request.form.get('rua_proponente')
+        numero = request.form.get('numero_proponente')
+        bairro = request.form.get('bairro_proponente')
+        cidade = request.form.get('cidade_proponente')
+        cep = request.form.get('cep_proponente')
+
+        proponente_data = {
+            'nome_proponente': nome_proponente,
+            'rg': rg,
+            'emissor': emissor,
+            'cpf': cpf,
+            'sexo': sexo,
+            'estado_civil': estado_civil,
+            'rua': rua,
+            'numero': numero,
+            'bairro': bairro,
+            'cidade': cidade,
+            'cep': cep
+        }
+
+
+        result = projeto_collection.update_one(
+            {'_id': ObjectId(projeto_id)},
+            {'$push': {'proponente': proponente_data}}
+        )
+
+        if result.matched_count > 0:
+            print("\033[92m", "Proponente adicionado com sucesso!", "\033[0m")
+        else:
+            print("\033[91m", "Nenhum documento corresponde ao critério fornecido.", "\033[0m")
+
+        return redirect(url_for('adicionar_proponente'))
+
+    projetos = list(projeto_collection.find())
+    # Converta todos os ObjectId para strings aqui
+    for projeto in projetos:
+        if isinstance(projeto['_id'], ObjectId):
+            projeto['_id'] = str(projeto['_id'])
+
+    return render_template('adicionar_proponente.html', projetos=projetos)
 
 @app.route('/export_to_excel')
 def export_to_excel():

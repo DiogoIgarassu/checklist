@@ -15,7 +15,6 @@ db = client['MeuChecklist']
 
 user_collection = db['usuarios']
 
-
 from routes import *
 from utils import *
 
@@ -31,5 +30,4 @@ def load_user(user_id):
 if __name__ == "__main__":
     #listar_usuarios()
     #apagar_usuario('')
-    #listar_projetos()
     app.run(debug=True)
