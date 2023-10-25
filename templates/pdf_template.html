@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>{{ projeto['nome'] }}</h1>
+    <p>Proponente: {{ projeto['proponente']['nome_proponente'] }}</p>
+    <p>RG: {{ projeto['proponente']['rg'] }}</p>
+    <p>CPF: {{ projeto['proponente']['cpf'] }}</p>
+
+{% endblock %}

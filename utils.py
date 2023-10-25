@@ -71,7 +71,7 @@ def criar_tarefas_gerais(lista_tarefas=None, projetos_nomes=None):
         lista_tarefas = tarefas  # assumindo que 'tarefas' é uma variável global
 
     # Filtrar projetos com base na lista fornecida de nomes de projetos
-    projetos_nomes = ['Artista Elisangela Monteiro', 'Artista Marcelo Stallone']
+    projetos_nomes = ['Artista Rosa Santos']
 
     # Montar a query para encontrar os projetos desejados
     query = {}
@@ -160,3 +160,86 @@ def excluir_todas_tarefas():
     except Exception as e:
         return str(e), 500
     return print("\033[91m", f"Todas as tarefas apagadas com sucesso!", "\033[0m")
+
+
+def listar_projetos_e_proponentes():
+    # Buscar todos os projetos
+    projetos = list(projeto_collection.find())
+
+    try:
+        # Ordenar os projetos pelo nome
+        projetos.sort(key=lambda x: x['nome'].lower())
+
+        for projeto in projetos:
+            # Imprimir o nome do projeto
+            print("\033[94m", f"Nome do Projeto: {projeto['nome']}", "\033[0m")
+
+            # Acessar o campo 'proponente' no projeto, se existir
+            proponente_data = projeto.get('proponente')
+
+            if proponente_data is not None:
+                if isinstance(proponente_data, list):  # Caso seja uma lista de dicionários
+                    for i, proponente in enumerate(proponente_data):
+                        print(f"  Proponente {i + 1}:")
+                        print_proponente_info(proponente)
+                elif isinstance(proponente_data, dict):  # Caso seja um único dicionário
+                    print("  Proponente:")
+                    print_proponente_info(proponente_data)
+                else:
+                    print("  Tipo de dados do proponente não suportado.")
+            else:
+                print("  Sem proponentes.")
+
+    except Exception as e:
+        print(str(e))
+
+
+def print_proponente_info(proponente):
+    print(f"    Nome: {proponente.get('nome_proponente', 'N/A')}")
+    print(f"    RG: {proponente.get('rg', 'N/A')} ({proponente.get('emissor', 'N/A')})")
+    print(f"    CPF: {proponente.get('cpf', 'N/A')}")
+    print(f"    Sexo: {proponente.get('sexo', 'N/A')}")
+    print(f"    Estado Civil: {proponente.get('estado_civil', 'N/A')}")
+    print(f"    Endereço: Rua {proponente.get('rua', 'N/A')}, Nº {proponente.get('numero', 'N/A')}")
+    print(f"    Bairro: {proponente.get('bairro', 'N/A')}, Cidade: {proponente.get('cidade', 'N/A')}")
+    print(f"    CEP: {proponente.get('cep', 'N/A')}")
+
+
+def delete_proponente_by_project_name(project_name):
+    projeto = projeto_collection.find_one({'nome': project_name})
+
+    # Verificar se o projeto foi encontrado
+    if projeto:
+        # Deletar o campo "proponente"
+        projeto_collection.update_one({'_id': projeto['_id']}, {'$unset': {'proponente': ""}})
+        print(f"Campo 'proponente' do projeto {project_name} foi removido com sucesso.")
+    else:
+        print(f"Projeto com nome {project_name} não encontrado.")
+
+
+def substituir_nome_projeto(nome_antigo, nome_novo):
+    """
+    Substitui o nome antigo do projeto pelo nome novo na coleção de projetos.
+
+    Args:
+    - nome_antigo (str): Nome antigo do projeto.
+    - nome_novo (str): Nome novo para o projeto.
+
+    Returns:
+    - str: Mensagem indicando sucesso ou falha na operação.
+    """
+
+    # Verificar se o projeto com o nome antigo existe
+    projeto = projeto_collection.find_one({'nome': nome_antigo})
+
+    if not projeto:
+        return f"Projeto com nome '{nome_antigo}' não encontrado."
+
+    # Atualizar o nome do projeto
+    projeto_collection.update_one({'_id': projeto['_id']}, {'$set': {'nome': nome_novo}})
+
+    return f"Nome do projeto atualizado de '{nome_antigo}' para '{nome_novo}' com sucesso."
+
+# Testando a função
+# nome_antigo = input("Digite o nome antigo do projeto: ")
+# nome_novo = input("Digite o novo nome para o projeto: ")

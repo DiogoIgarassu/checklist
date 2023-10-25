@@ -75,3 +75,11 @@ for projeto in projetos:
         else:
             print("\033[91m", f"Não foi possível acessar a URL {url} para o projeto {projeto['nome']}")
 
+    if 'proponente' in projeto and projeto['proponente']:
+        proponente_cidade = projeto['proponente'][0].get('cidade', '').strip()
+        if proponente_cidade:
+            projeto_collection.update_one(
+                {'_id': projeto['_id']},
+                {'$set': {'cidade': proponente_cidade}}
+            )
+            print("\033[93m", f">> Cidade do projeto {projeto['nome']} atualizada para {proponente_cidade} com base no proponente")

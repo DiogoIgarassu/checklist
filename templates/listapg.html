@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center">
+    <h2><b>Projetos Edital Paulo Gustavo PE 2023</b></h2>
+</div>
+<br>
+
+{% set titulos = {
+    'edital_salvaguarda_coletivos': 'Edital Salvaguarda Coletivos - 20Mil',
+    'edital_salvaguarda_metres': 'Edital Salvaguarda Mestres - 10Mil',
+    'edital_desenvolve_cultura_60': 'Edital Desenvolve + Cultura Circos - 60Mil',
+    'edital_desenvolve_cultura_30': 'Edital Desenvolve + Cultura Circos - 30Mil',
+    'edital_acoes_criativas': 'Edital Ações Criativas - 10Mil',
+    'edital_fomento_cultural': 'Edital Fomento Cultural',
+    'nao_enviados': 'Projetos não construídos'
+} %}
+
+{% for edital, lista_projetos in contexto.items() %}
+    {% if lista_projetos %} <!-- Verifica se a lista não está vazia -->
+        <div class="d-flex justify-content-between align-items-center fundo-azul">
+               <h2><b># {{ titulos[edital] }}</b></h2>
+                <span><b>Total: {{ lista_projetos|length }}</b></span>
+        </div>
+
+    <div id="projectList">
+        {% for projeto in lista_projetos %}
+      <div class="card mb-3" data-id="{{ projeto['_id'] }}">
+          <div class="card-header d-flex justify-content-between align-items-center {{ 'fundo-verde' if titulos[edital] != 'Projetos não construídos' else '' }}">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#project{{ projeto['_id'] }}">
+                  {% if current_user.is_authenticated %}
+                    <span class="letra-g"><strong>{{ projeto.nome }}</strong>  </span>
+                  {% else %}
+                    <span class="letra-gg"><strong>{{ projeto.nome }}</strong>  </span>
+                  {% endif %}
+               </button>
+               <input type="checkbox" class="project-checkbox" data-project="{{ projeto.nome }}" {{ 'checked' if projeto.aprovado else '' }} style="background-color: {{ 'lightgreen' if projeto.aprovado else 'lightred' }};">
+          </div>
+          <div id="project{{ projeto['_id'] }}" class="collapse show">
+
+            {% if projeto['mapa'] %}
+              <div class="card-footer">
+                <div class="d-flex align-items-center" >
+
+                  <!-- Coluna da Foto e Nome do Mapa (80% da largura) -->
+                  <div style="flex: 0 0 80%;">
+                    <div class="d-flex alinha-esquerda">
+                      <!-- Foto de perfil -->
+                      <div>
+                        {% if projeto['foto_perfil'] %}
+                          <img src="{{ projeto['foto_perfil'] }}" alt="Profile Picture" width="80" height="80">
+                        {% else %}
+                          <!-- Foto padrão caso o atributo 'foto_perfil' não exista -->
+                          <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Profile Picture" width="50" height="50">
+                        {% endif %}
+                      </div>
+
+                      <!-- Nome do Projeto e Link para o Mapa Cultural -->
+                      <div class="ml-3">
+                        <strong>{{ projeto['nome_mapa'] }}</strong><br>
+                        <a href="{{ projeto['mapa'] }}" target="_blank">{{ projeto['mapa'] }}</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Coluna da Cidade (alinhar vertical e horizontalmente) -->
+                  <div class="d-flex align-items-center justify-content-center" style="flex: 1;">
+                    <strong>{{ projeto['cidade'] or 'Cidade não disponível' }} - PE</strong>
+                  </div>
+
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+      </div>
+      {% endfor %}
+</div>
+    {% endif %}
+{% endfor %}
+
+       {% if current_user.is_authenticated %}
+      <div style="position: fixed; bottom: 10px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+          Lista de Projetos
+        </a>
+      </div>
+    {% endif %}
+{% endblock %}

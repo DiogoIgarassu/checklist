@@ -92,6 +92,28 @@
                   {% endif %}
                   <ul class="list-group list-group-flush">
                       {% for item in projeto.itens %}
+
+                        <!-- Modal para edição de tarefa -->
+                        <div class="modal fade" id="editModal{{ item['_id'] }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar Tarefa</h5>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="editForm{{ item['_id'] }}" method="post" action="/edit_task/{{ projeto['_id'] }}/{{ item['_id'] }}">
+                                            <input type="text" name="editedTaskName" value="{{ item.nome }}" class="form-control">
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" form="editForm{{ item['_id'] }}" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                       <li class="list-group-item d-flex justify-content-between align-items-center {{ 'checked-item' if item.feito else 'unchecked-item' }}">
                         {% if current_user.is_authenticated %}
                             <div class="custom-control custom-switch">
@@ -111,9 +133,14 @@
                             </span>
                         {% endif %}
                           {% if current_user.is_authenticated %}
-                            <button class="btn btn-danger btn-sm trash" data-toggle="modal" data-target="#deleteModal{{ projeto['_id'] }}" data-type="tarefa" data-id="{{ item['_id'] }}" data-projeto-id="{{ projeto['_id'] }}">
-                                <i class="fa fa-trash"></i>
-                            </button>
+                            <div>
+                                <button class="btn btn-warning btn-sm edit" data-toggle="modal" data-target="#editModal{{ item['_id'] }}" data-id="{{ item['_id'] }}" data-projeto-id="{{ projeto['_id'] }}">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm trash" data-toggle="modal" data-target="#deleteModal{{ projeto['_id'] }}" data-type="tarefa" data-id="{{ item['_id'] }}" data-projeto-id="{{ projeto['_id'] }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
                           {% endif %}
                       </li>
                       {% endfor %}
@@ -161,6 +188,18 @@
 
 
     {% if current_user.is_authenticated %}
+      <div style="position: fixed; bottom: 210px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('lista_mapas') }}" class="btn btn-primary">
+          Lista de Mapas
+        </a>
+      </div>
+      <div style="position: fixed; bottom: 160px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('por_projetos') }}" class="btn btn-success">
+          Lista por Editais
+        </a>
+      </div>
       <div style="position: fixed; bottom: 110px; right: 10px;">
         <!-- Adicionando o botão Vincular Mapa -->
         <a href="{{ url_for('adicionar_proponente') }}" class="btn btn-warning">
@@ -177,6 +216,19 @@
         <!-- Botão de Download no final da página -->
         <a href="{{ url_for('export_to_excel') }}" class="btn btn-success">
           Download dos Dados
+        </a>
+      </div>
+    {% else %}
+      <div style="position: fixed; bottom: 60px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('lista_mapas') }}" class="btn btn-primary">
+          Lista de Mapas
+        </a>
+      </div>
+      <div style="position: fixed; bottom: 10px; right: 10px;">
+        <!-- Adicionando o botão Vincular Mapa -->
+        <a href="{{ url_for('por_projetos') }}" class="btn btn-success">
+          Lista por Editais
         </a>
       </div>
     {% endif %}

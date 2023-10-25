@@ -26,7 +26,7 @@
                             data-cidade="{{ projeto.get('proponente', [{}])[0].get('cidade', '') }}"
                             data-cep="{{ projeto.get('proponente', [{}])[0].get('cep', '') }}"
                             >
-                            {{ projeto.nome }} - Tem Proponente
+                            <b>{{ projeto.nome }}</b> --> {{ projeto.proponente[0].nome_proponente }}
                         </option>
                     {% else %}
                         <option value="{{ projeto._id }}"
@@ -42,7 +42,7 @@
                             data-cidade="{{ projeto.get('proponente', [{}])[0].get('cidade', '') }}"
                             data-cep="{{ projeto.get('proponente', [{}])[0].get('cep', '') }}"
                         >
-                        {{ projeto.nome }}
+                        <b>{{ projeto.nome }}</b>
                     </option>
                     {% endif %}
                 {% endfor %}
@@ -136,6 +136,12 @@
                 receber pagamentos e dar quitação, renunciar direitos e qualquer outro ato relacionado ao referido edital.
             </p>
         </div>
+
+        <!-- Adicionando o botão Vincular Mapa -->
+            <a id="download_anuencia" class="btn btn-danger">
+                Download Carta de Anuência
+            </a>
+      </div>
     </div>
 
         <div class="card card-carta mt-5">
@@ -199,6 +205,11 @@
     document.getElementById('anuencia_rg').textContent = selectedOption.getAttribute('data-rg');
     document.getElementById('anuencia_emissor').textContent = selectedOption.getAttribute('data-emissor');
     document.getElementById('anuencia_cpf').textContent = selectedOption.getAttribute('data-cpf');
+    const downloadAnuenciaButton = document.getElementById('download_anuencia');
+    console.log('downloadAnuenciaButton', downloadAnuenciaButton);
+    const projectName = selectedOption.getAttribute('data-nome_projeto');
+    downloadAnuenciaButton.href = `/download_pdf?project_name=${encodeURIComponent(projectName)}`;
+    console.log('downloadAnuenciaButton', downloadAnuenciaButton.href);
 
 
     // Suponha que o atributo de dados para o sexo seja 'data-sexo'

@@ -30,4 +30,9 @@ def load_user(user_id):
 if __name__ == "__main__":
     #listar_usuarios()
     #apagar_usuario('')
+    listar_projetos()
+    #listar_projetos_e_proponentes()
+    #delete_proponente_by_project_name("Circo do Palhaço Latinha")
+    #criar_tarefas_gerais()
+    #substituir_nome_projeto('Ciro Rayane', 'Circo Rayane')
     app.run(debug=True)

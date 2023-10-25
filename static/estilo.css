@@ -182,4 +182,16 @@ input:checked + .slider:before {
 
 .card-body p {
     text-align: justify;
+    font-family: calibri
+}
+
+.fundo-verde {
+    background-color: lightgreen;
+}
+.fundo-azul {
+    background-color: lightblue;
+}
+
+.project-checkbox {
+    margin-left: 10px;
 }
